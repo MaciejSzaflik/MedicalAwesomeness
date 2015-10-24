@@ -26,6 +26,10 @@ public class Display extends JPanel {
 	private JButton ChooseFileButton;
 	private JLabel imageLabel;
 	private BufferedImage imageLoaded;
+	public BufferedImage getImageLoaded()
+	{
+		return imageLoaded;
+	}
 
 	public Display(int size,boolean chooseButtonVisible)
 	{
@@ -66,20 +70,24 @@ public class Display extends JPanel {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		
+		scaleAndSetImage(imageLoaded);
+	}
+	public void scaleAndSetImage(BufferedImage image)
+	{
 		AffineTransform at = new AffineTransform();
-		float scaleParameter = (float)getHeight()/imageLoaded.getHeight();
+		float scaleParameter = (float)getHeight()/image.getHeight();
 		at.scale(scaleParameter ,scaleParameter );
 		AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
-		int newWidth = (int) (imageLoaded.getWidth()*scaleParameter);
-		int newHeight = (int) (imageLoaded.getHeight()*scaleParameter);
+		int newWidth = (int) (image.getWidth()*scaleParameter);
+		int newHeight = (int) (image.getHeight()*scaleParameter);
 		BufferedImage after = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
-		after = scaleOp.filter(imageLoaded, after);
+		after = scaleOp.filter(image, after);
 		
 		imageLoaded = after;
 		imageLabel = new JLabel(new ImageIcon(after));
 		add(imageLabel);
+		this.revalidate();
+		this.repaint();
 	}
 	
 	public void removeButton()

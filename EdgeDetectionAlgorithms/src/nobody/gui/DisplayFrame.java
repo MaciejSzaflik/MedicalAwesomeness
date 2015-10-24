@@ -3,6 +3,13 @@ package nobody.gui;
 import java.awt.Color;
 
 import javax.swing.JFrame;
+import javax.swing.JButton;
+
+import nobody.algorithms.*;
+
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
 
 public class DisplayFrame extends JFrame {
 
@@ -28,6 +35,15 @@ public class DisplayFrame extends JFrame {
 		getContentPane().setLayout(null);
 		getContentPane().add(beforeImagePanel); 
 		getContentPane().add(afterImagePanel); 
+		
+		JButton btnBlur = new JButton("Blur");
+		btnBlur.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				AddEffectAndSwap();
+			}
+		});
+		btnBlur.setBounds(12, 570, 117, 25);
+		getContentPane().add(btnBlur);
 	}
 	private Display createDisplayPanel(int x,int y,boolean visibleButton)
 	{
@@ -36,5 +52,11 @@ public class DisplayFrame extends JFrame {
 		newDisplay.setBackground(new Color(200,200,200));
 		return newDisplay;
 	}
-
+	
+	private void AddEffectAndSwap()
+	{
+		BufferedImage image = beforeImagePanel.getImageLoaded();
+		CannyEdgeDetector canny = new CannyEdgeDetector();
+		afterImagePanel.scaleAndSetImage(canny.doYourThing(image));
+	}
 }
