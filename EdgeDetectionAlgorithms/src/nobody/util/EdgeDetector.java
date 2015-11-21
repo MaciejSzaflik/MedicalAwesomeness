@@ -10,7 +10,8 @@ public class EdgeDetector {
 	{
 		SobelOperator,
 		PrewittOperator,
-		Canny
+		Canny,
+		Threshold
 	}
 	
 	public EdgeDetector()
@@ -36,9 +37,14 @@ public class EdgeDetector {
 			case Canny:
 				toReturn = new CannyEdgeDetector();
 				break;
+			case Threshold:
+				toReturn = new Treshold(128);
+				break;
 		}
 		return toReturn;
 	}
+	
+	
 }
 
 
