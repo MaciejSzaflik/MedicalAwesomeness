@@ -56,7 +56,7 @@ public class DisplayFrame extends JFrame {
 	private void AddEffectAndSwap()
 	{
 		BufferedImage image = beforeImagePanel.getImageLoaded();
-		CannyEdgeDetector canny = new CannyEdgeDetector();
+		SobelOperator canny = new SobelOperator();
 		afterImagePanel.scaleAndSetImage(canny.doYourThing(image));
 	}
 }

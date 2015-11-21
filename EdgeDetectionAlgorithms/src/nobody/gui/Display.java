@@ -74,6 +74,7 @@ public class Display extends JPanel {
 	}
 	public void scaleAndSetImage(BufferedImage image)
 	{
+		System.out.println(image);
 		AffineTransform at = new AffineTransform();
 		float scaleParameter = (float)getHeight()/image.getHeight();
 		at.scale(scaleParameter ,scaleParameter );
@@ -82,7 +83,7 @@ public class Display extends JPanel {
 		int newHeight = (int) (image.getHeight()*scaleParameter);
 		BufferedImage after = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
 		after = scaleOp.filter(image, after);
-		
+		System.out.println(after);
 		imageLoaded = after;
 		imageLabel = new JLabel(new ImageIcon(after));
 		add(imageLabel);
