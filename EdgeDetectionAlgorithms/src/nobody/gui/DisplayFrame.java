@@ -53,6 +53,19 @@ public class DisplayFrame extends JFrame {
 		btnBlur.setBounds(12, 570, 117, 25);
 		getContentPane().add(btnBlur);
 		
+		JButton btnFile = new JButton("Choose file");
+		btnFile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				beforeImagePanel.openFileChooser();
+			}
+		});
+		btnFile.setBounds(12, 545, 117, 25);
+		getContentPane().add(btnFile);
+		
+
+		btnBlur.setBounds(12, 570, 117, 25);
+		getContentPane().add(btnBlur);
+		
 		comboBox = new JComboBox<EdgeDetector.Algorithms>();
 		comboBox.setBounds(142, 570, 241, 24);
 		getContentPane().add(comboBox);

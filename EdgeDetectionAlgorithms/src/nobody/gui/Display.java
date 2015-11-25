@@ -47,21 +47,23 @@ public class Display extends JPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				final JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
-				int returnVal = fc.showOpenDialog(ChooseFileButton);
-				
-				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					setImageFromFile(fc.getSelectedFile());
-					removeButton();
+				// TODO Auto-generated method stub			
+					openFileChooser();
 				}
-				
-			}
 			}
 		);
 		add(ChooseFileButton);
 	}
-	
+	public void openFileChooser()
+	{
+		final JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
+		int returnVal = fc.showOpenDialog(ChooseFileButton);
+		
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+			setImageFromFile(fc.getSelectedFile());
+			removeButton();
+		}
+	}
 	public void setImageFromFile(File file)
 	{
 		try {
@@ -74,7 +76,11 @@ public class Display extends JPanel {
 	}
 	public void scaleAndSetImage(BufferedImage image)
 	{
-		System.out.println(image);
+		if(imageLabel!=null)
+		{
+			imageLabel.setIcon(null);
+			imageLabel.revalidate();
+		}
 		AffineTransform at = new AffineTransform();
 		float scaleParameter = (float)getHeight()/image.getHeight();
 		at.scale(scaleParameter ,scaleParameter );
