@@ -32,7 +32,7 @@ public class EdgeDetector {
 				toReturn = new SobelOperator();
 				break;
 			case PrewittOperator:
-				toReturn = new SobelOperator();
+				toReturn = new PrewittOperator();
 				break;
 			case Canny:
 				toReturn = new CannyEdgeDetector();

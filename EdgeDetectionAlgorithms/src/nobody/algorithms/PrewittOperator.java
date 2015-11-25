@@ -1,26 +1,22 @@
 package nobody.algorithms;
 
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
 import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
-
-public class SobelOperator implements IEdgeDetect {
+public class PrewittOperator implements IEdgeDetect {
 
 	float[] Gx = {
-		      -1.0f,-2.0f,-1.0f,
-		       0.0f, 0.0f, 0.0f,
-		       1.0f, 2.0f, 1.0f
+		      -1.0f, 0.0f, 1.0f,
+		       1.0f, 0.0f, 1.0f,
+		      -1.0f, 0.0f, 1.0f
 		    };
 	float Gy[] = {
-		       -1.0f, 0.0f, 1.0f,
-		       -2.0f, 0.0f, 2.0f,
-		       -1.0f, 0.0f, 1.0f
+		       -1.0f,-1.0f,-1.0f,
+		        0.0f, 0.0f, 0.0f,
+		        1.0f, 1.0f, 1.0f
 		    };
 	@Override
 	public BufferedImage doYourThing(BufferedImage Image) {
@@ -34,4 +30,5 @@ public class SobelOperator implements IEdgeDetect {
 		
 		return dest;
 	}
+
 }
