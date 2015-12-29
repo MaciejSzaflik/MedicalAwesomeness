@@ -18,7 +18,7 @@ public class GaussianFilter implements IEdgeDetect {
 	    };
 	@Override
 	public BufferedImage doYourThing(BufferedImage Image) {
-		BufferedImageOp op = new ConvolveOp( new Kernel(5, 5,Utils.mulArrayByS(matrix, (float)1/115)));
+		BufferedImageOp op = new ConvolveOp( new Kernel(5, 5,Utils.mulArrayByS(matrix, (float)1/159)));
 		BufferedImage dest = new BufferedImage(Image.getWidth(), Image.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		return op.filter(Image, dest);
 	}

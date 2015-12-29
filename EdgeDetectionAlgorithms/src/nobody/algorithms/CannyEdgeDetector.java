@@ -3,6 +3,7 @@ package nobody.algorithms;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
+import java.awt.image.ColorConvertOp;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
 import java.io.File;
@@ -14,19 +15,25 @@ import nobody.util.Utils;
 
 public class CannyEdgeDetector implements IEdgeDetect {
 
-	float[] Gx = {
-		       -0.33f, 0, 0.33f,
-		       -0.66f, 0.33f, 0.66f,
-		       -0.33f, 0, 0.33f
+	float[][] Gx = {
+		      {-1.0f,-2.0f,-1.0f},
+		      { 0.0f, 0.0f, 0.0f},
+		      { 1.0f, 2.0f, 1.0f}
+		    };
+	float[][] Gy = {
+			  {-1.0f, 0.0f, 1.0f},
+		      {-2.0f, 0.0f, 2.0f},
+		      {-1.0f, 0.0f, 1.0f}
 		    };
 	@Override
 	public BufferedImage doYourThing(BufferedImage Image) {
 		
-		BufferedImageOp op = new ConvolveOp( new Kernel(3, 3,Gx));
-		BufferedImage dest = new BufferedImage(Image.getWidth(), Image.getHeight(), BufferedImage.TYPE_INT_ARGB);
-		//BufferedImage noNoise = new GaussianFilter().doYourThing(Image);
-		
-		File outputfile = new File("image.png");
+		BufferedImage gray = new BufferedImage(Image.getWidth(),Image.getHeight(),BufferedImage.TYPE_BYTE_GRAY);
+	    ColorConvertOp op = new ColorConvertOp(Image.getColorModel().getColorSpace(),gray.getColorModel().getColorSpace(),null);
+	    op.filter(Image,gray);
+		BufferedImage noNoise = new GaussianFilter().doYourThing(gray);
+		return applySobel(noNoise);
+		/*File outputfile = new File("image.png");
 		dest = op.filter(Image, dest);
         try {
 			ImageIO.write(dest, "png", outputfile);
@@ -35,8 +42,64 @@ public class CannyEdgeDetector implements IEdgeDetect {
 			e.printStackTrace();
 		}
 		
-		return dest;
+		return dest;*/
 		
 	}
-
+	public BufferedImage applySobel(BufferedImage image)
+	{
+		BufferedImage dest = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+		for(int x = 1;x<image.getWidth()-1;x++)
+		{
+			for(int y = 1;y<image.getHeight()-1;y++)
+			{
+				
+				int g_x = 
+					(int) ((Gx[0][0] * getAt(x-1,y-1,image)) + (Gx[0][1] * getAt(x,y-1,image)) + (Gx[0][2] * getAt(x+1,y-1,image)) +
+			               (Gx[1][0] * getAt(x-1,y  ,image)) + (Gx[1][1] * getAt(x,y  ,image)) + (Gx[1][2] * getAt(x+1,y  ,image)) +
+			               (Gx[2][0] * getAt(x-1,y+1,image)) + (Gx[2][1] * getAt(x,y+1,image)) + (Gx[2][2] * getAt(x+1,y+1,image)));
+				
+				int g_y = 
+						(int) ((Gy[0][0] * getAt(x-1,y-1,image)) + (Gy[0][1] * getAt(x,y-1,image)) + (Gy[0][2] * getAt(x+1,y-1,image)) +
+				               (Gy[1][0] * getAt(x-1,y  ,image)) + (Gy[1][1] * getAt(x,y  ,image)) + (Gy[1][2] * getAt(x+1,y  ,image)) +
+				               (Gy[2][0] * getAt(x-1,y+1,image)) + (Gy[2][1] * getAt(x,y+1,image)) + (Gy[2][2] * getAt(x+1,y+1,image)));
+				int angleValue = 0;
+				if(g_x == 0 && g_y == 0)
+					angleValue = 0;
+				else if(g_x == 0)
+					angleValue = 90;
+				else
+				{
+					angleValue = descritizeAngle(Math.toDegrees(Math.atan2(g_y,g_x)));
+				}
+				    
+				
+				//System.out.println(angleValue + " " + Math.toDegrees(Math.atan((double)Math.abs(g_y)/Math.abs(g_x))) + " "+ g_y + " " + g_x );
+				Color color = new Color(angleValue,angleValue,angleValue);
+				dest.setRGB(x, y, color.getRGB());
+			}
+		}
+		
+		return dest;
+	}
+	private int getAt(int x,int y,BufferedImage image)
+	{
+		return (image.getRGB(x, y) & 0xff);
+	}
+	private int descritizeAngle(double d)
+	{
+		if(checkRange(0,22.5,d) || checkRange(157.5,180,d))
+			return 0;
+		else if(checkRange(22.5,67.5,d))
+			return 45;
+		else if(checkRange(67.5,112.5,d))
+			return 90;
+		else if(checkRange(112.5,157.5,d))
+			return 135;
+		
+		return 0;
+	}
+	private boolean checkRange(double a,double b,double value)
+	{
+		return value >= a && value < b;
+	}
 }
