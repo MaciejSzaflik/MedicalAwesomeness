@@ -25,29 +25,27 @@ public class CannyEdgeDetector implements IEdgeDetect {
 		      {-2.0f, 0.0f, 2.0f},
 		      {-1.0f, 0.0f, 1.0f}
 		    };
+	
+	int [][] powerTable;
+	int [][] angleTable;
+	
 	@Override
 	public BufferedImage doYourThing(BufferedImage Image) {
 		
+		powerTable = null;
+		angleTable = null;
 		BufferedImage gray = new BufferedImage(Image.getWidth(),Image.getHeight(),BufferedImage.TYPE_BYTE_GRAY);
 	    ColorConvertOp op = new ColorConvertOp(Image.getColorModel().getColorSpace(),gray.getColorModel().getColorSpace(),null);
 	    op.filter(Image,gray);
 		BufferedImage noNoise = new GaussianFilter().doYourThing(gray);
-		return applySobel(noNoise);
-		/*File outputfile = new File("image.png");
-		dest = op.filter(Image, dest);
-        try {
-			ImageIO.write(dest, "png", outputfile);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return dest;*/
+		return countGradients(noNoise);
 		
 	}
-	public BufferedImage applySobel(BufferedImage image)
+	public BufferedImage countGradients(BufferedImage image)
 	{
 		BufferedImage dest = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+		angleTable = new int[image.getWidth()-1][image.getHeight()-1];
+		powerTable = new int[image.getWidth()-1][image.getHeight()-1];
 		for(int x = 1;x<image.getWidth()-1;x++)
 		{
 			for(int y = 1;y<image.getHeight()-1;y++)
@@ -68,18 +66,51 @@ public class CannyEdgeDetector implements IEdgeDetect {
 				else if(g_x == 0)
 					angleValue = 90;
 				else
-				{
 					angleValue = descritizeAngle(Math.toDegrees(Math.atan2(g_y,g_x)));
-				}
-				    
+				angleTable[x-1][y-1] = angleValue;				
+				powerTable[x-1][y-1]  = Utils.clamp((int) Math.sqrt((g_x * g_x) + (g_y * g_y)),0,255);
+			}
+			
+		}
+		
+		for(int i = 0;i<powerTable.length;i++)
+		{
+			for(int j = 0;j<powerTable[i].length;j++)
+			{
+				if(shouldSuppress(i,j,angleTable[i][j],powerTable))
+					powerTable[i][j] = 0;
 				
-				//System.out.println(angleValue + " " + Math.toDegrees(Math.atan((double)Math.abs(g_y)/Math.abs(g_x))) + " "+ g_y + " " + g_x );
-				Color color = new Color(angleValue,angleValue,angleValue);
-				dest.setRGB(x, y, color.getRGB());
+				Color color = new Color(powerTable[i][j],powerTable[i][j],powerTable[i][j]);
+				dest.setRGB(i, j, color.getRGB());	
 			}
 		}
 		
+		
 		return dest;
+	}
+	private int getIntArray(int x,int y,int[][] table)
+	{
+		if(x < 0 || x >= table.length || y < 0 || y >= table[x].length)
+			return Integer.MIN_VALUE;
+		else
+			return table[x][y];
+	}
+	private boolean shouldSuppress(int x,int y,int gradientValue,int [][] refereneceTable)
+	{
+		if(gradientValue == 0)
+			return !greaterThan(getIntArray(x,y,refereneceTable),getIntArray(x-1,y,refereneceTable),getIntArray(x+1,y,refereneceTable));
+		else if(gradientValue == 45)
+			return !greaterThan(getIntArray(x,y,refereneceTable),getIntArray(x+1,y+1,refereneceTable),getIntArray(x-1,y-1,refereneceTable));
+		else if(gradientValue == 90)
+			return !greaterThan(getIntArray(x,y,refereneceTable),getIntArray(x,y+1,refereneceTable),getIntArray(x,y-1,refereneceTable));
+		else if(gradientValue == 135)
+			return !greaterThan(getIntArray(x,y,refereneceTable),getIntArray(x-1,y+1,refereneceTable),getIntArray(x+1,y-1,refereneceTable));
+		return true;
+	}
+	
+	private boolean greaterThan(int check,int value1,int value2)
+	{
+		return check > value1 && check > value2;
 	}
 	private int getAt(int x,int y,BufferedImage image)
 	{
