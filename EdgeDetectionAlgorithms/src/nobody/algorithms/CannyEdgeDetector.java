@@ -38,7 +38,7 @@ public class CannyEdgeDetector implements IEdgeDetect {
 	    ColorConvertOp op = new ColorConvertOp(Image.getColorModel().getColorSpace(),gray.getColorModel().getColorSpace(),null);
 	    op.filter(Image,gray);
 		BufferedImage noNoise = new GaussianFilter().doYourThing(gray);
-		return countGradients(noNoise);
+		return new DoubleThreshold(80,20).doYourThing(countGradients(noNoise));
 		
 	}
 	public BufferedImage countGradients(BufferedImage image)
@@ -66,7 +66,7 @@ public class CannyEdgeDetector implements IEdgeDetect {
 				else if(g_x == 0)
 					angleValue = 90;
 				else
-					angleValue = descritizeAngle(Math.toDegrees(Math.atan2(g_y,g_x)));
+					angleValue = descritizeAngle(Math.toDegrees((Math.atan((double)g_y/g_x))));
 				angleTable[x-1][y-1] = angleValue;				
 				powerTable[x-1][y-1]  = Utils.clamp((int) Math.sqrt((g_x * g_x) + (g_y * g_y)),0,255);
 			}
@@ -104,7 +104,7 @@ public class CannyEdgeDetector implements IEdgeDetect {
 		else if(gradientValue == 90)
 			return !greaterThan(getIntArray(x,y,refereneceTable),getIntArray(x,y+1,refereneceTable),getIntArray(x,y-1,refereneceTable));
 		else if(gradientValue == 135)
-			return !greaterThan(getIntArray(x,y,refereneceTable),getIntArray(x-1,y+1,refereneceTable),getIntArray(x+1,y-1,refereneceTable));
+			return !greaterThan(getIntArray(x,y,refereneceTable),getIntArray(x-1,y-1,refereneceTable),getIntArray(x+1,y+1,refereneceTable));
 		return true;
 	}
 	
