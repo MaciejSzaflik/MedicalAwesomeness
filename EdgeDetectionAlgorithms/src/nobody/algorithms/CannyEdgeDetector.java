@@ -41,22 +41,11 @@ public class CannyEdgeDetector implements IEdgeDetect {
 		countGradients(noNoise);
 		powerTable = new DoubleThreshold(60,15).doubleThresholdOnTable(powerTable); 
 		blobDetection();
-		return imageFromTable(powerTable);
+		return Utils.imageFromTable(powerTable);
 		
 	}
 	
-	public BufferedImage imageFromTable(int[][] table)
-	{
-		int width = table.length;
-		int height = table[0].length;
-		BufferedImage finalThresholdImage = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB) ;
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-				finalThresholdImage.setRGB(x,y,Utils.mixColor(table[x][y], table[x][y],table[x][y]));
-			}
-		}
-		return finalThresholdImage;
-	}
+	
 	
 	public void countGradients(BufferedImage image)
 	{
@@ -85,7 +74,7 @@ public class CannyEdgeDetector implements IEdgeDetect {
 				else
 					angleValue = descritizeAngle(Math.toDegrees((Math.atan((double)g_y/g_x))));
 				angleTable[x-1][y-1] = angleValue;				
-				powerTable[x-1][y-1]  = Utils.clamp((int) Math.sqrt((g_x * g_x) + (g_y * g_y)),0,255);
+				powerTable[x-1][y-1]  = (int) Math.sqrt((g_x * g_x) + (g_y * g_y));
 			}
 			
 		}

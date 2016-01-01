@@ -12,7 +12,8 @@ public class EdgeDetector {
 		PrewittOperator,
 		Canny,
 		Laplace,
-		LoG
+		LoG,
+		Frei_Chen
 	}
 	
 	public EdgeDetector()
@@ -44,6 +45,8 @@ public class EdgeDetector {
 			case LoG:
 				toReturn = new LoG();
 				break;
+			case Frei_Chen:
+				toReturn = new Frei_Chen();
 		}
 		return toReturn;
 	}

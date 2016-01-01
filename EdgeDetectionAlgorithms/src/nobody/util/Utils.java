@@ -1,5 +1,6 @@
 package nobody.util;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 public class Utils {
@@ -20,5 +21,29 @@ public class Utils {
 	}
 	public static int mixColor(int red, int green, int blue) {
 		return red<<16|green<<8|blue;
+	}
+	public static BufferedImage imageFromTable(int[][] table)
+	{
+		int width = table.length;
+		int height = table[0].length;
+		BufferedImage finalThresholdImage = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB) ;
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				finalThresholdImage.setRGB(x,y,Utils.mixColor(table[x][y], table[x][y],table[x][y]));
+			}
+		}
+		return finalThresholdImage;
+	}
+	public static BufferedImage imageFromTableRGB(int[][] table)
+	{
+		int width = table.length;
+		int height = table[0].length;
+		BufferedImage finalThresholdImage = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB) ;
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				finalThresholdImage.setRGB(x,y, (new Color(table[x][y],table[x][y],table[x][y]).getRGB()));
+			}
+		}
+		return finalThresholdImage;
 	}
 }
