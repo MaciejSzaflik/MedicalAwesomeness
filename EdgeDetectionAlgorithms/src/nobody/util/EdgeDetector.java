@@ -11,7 +11,6 @@ public class EdgeDetector {
 		SobelOperator,
 		PrewittOperator,
 		Canny,
-		Threshold,
 		Laplace,
 		LoG
 	}
@@ -38,9 +37,6 @@ public class EdgeDetector {
 				break;
 			case Canny:
 				toReturn = new CannyEdgeDetector();
-				break;
-			case Threshold:
-				toReturn = new Treshold(128);
 				break;
 			case Laplace:
 				toReturn = new Laplace();

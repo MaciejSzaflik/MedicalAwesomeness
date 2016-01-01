@@ -40,6 +40,29 @@ public class DoubleThreshold implements IEdgeDetect {
 		}
 		return finalThresholdImage;
 	}
+	
+	public int[][] doubleThresholdOnTable(int[][] powerTable) {
+		int width = powerTable.length;
+		int height = powerTable[0].length;
+		
+		
+		for (int x = 0; x < powerTable.length; x++) {
+			for (int y = 0; y < powerTable[x].length; y++) {
+				int color = powerTable[x][y];
+				int toSet = 0;
+				if(color>=upperThreshold)
+					toSet = 255;
+				else if(color>=lowerThreshold)
+					toSet = 127;
+				else
+					toSet = 0;
+				
+				powerTable[x][y] = toSet;
+			}
+		}
+		return powerTable;
+	}
+	
 	private int mixColor(int red, int green, int blue) {
 		return red<<16|green<<8|blue;
 	}

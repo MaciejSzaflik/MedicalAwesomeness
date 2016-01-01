@@ -38,12 +38,29 @@ public class CannyEdgeDetector implements IEdgeDetect {
 	    ColorConvertOp op = new ColorConvertOp(Image.getColorModel().getColorSpace(),gray.getColorModel().getColorSpace(),null);
 	    op.filter(Image,gray);
 		BufferedImage noNoise = new GaussianFilter().doYourThing(gray);
-		return new DoubleThreshold(80,20).doYourThing(countGradients(noNoise));
+		countGradients(noNoise);
+		powerTable = new DoubleThreshold(60,15).doubleThresholdOnTable(powerTable); 
+		blobDetection();
+		return imageFromTable(powerTable);
 		
 	}
-	public BufferedImage countGradients(BufferedImage image)
+	
+	public BufferedImage imageFromTable(int[][] table)
 	{
-		BufferedImage dest = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+		int width = table.length;
+		int height = table[0].length;
+		BufferedImage finalThresholdImage = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB) ;
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				finalThresholdImage.setRGB(x,y,Utils.mixColor(table[x][y], table[x][y],table[x][y]));
+			}
+		}
+		return finalThresholdImage;
+	}
+	
+	public void countGradients(BufferedImage image)
+	{
+	
 		angleTable = new int[image.getWidth()-1][image.getHeight()-1];
 		powerTable = new int[image.getWidth()-1][image.getHeight()-1];
 		for(int x = 1;x<image.getWidth()-1;x++)
@@ -79,14 +96,23 @@ public class CannyEdgeDetector implements IEdgeDetect {
 			{
 				if(shouldSuppress(i,j,angleTable[i][j],powerTable))
 					powerTable[i][j] = 0;
-				
-				Color color = new Color(powerTable[i][j],powerTable[i][j],powerTable[i][j]);
-				dest.setRGB(i, j, color.getRGB());	
+					
 			}
 		}
-		
-		
-		return dest;
+	}
+	private void blobDetection()
+	{
+		for(int i = 0;i<powerTable.length;i++)
+		{
+			for(int j = 0;j<powerTable[i].length;j++)
+			{
+				if(neighbourCheck(i,j,255,powerTable))
+					powerTable[i][j] = 255;
+				else
+					powerTable[i][j] = 0;
+					
+			}
+		}
 	}
 	private int getIntArray(int x,int y,int[][] table)
 	{
@@ -94,6 +120,18 @@ public class CannyEdgeDetector implements IEdgeDetect {
 			return Integer.MIN_VALUE;
 		else
 			return table[x][y];
+	}
+	private boolean neighbourCheck(int x,int y,int value,int [][] table)
+	{
+		if(table[x][y] == 0)
+			return false;
+		else
+		{
+			boolean one =  getIntArray(x+1,y+1,table) == value || getIntArray(x,y+1,table) == value || getIntArray(x-1,y+1,table) == value;
+			boolean two =  getIntArray(x+1,y,table) == value || getIntArray(x-1,y,table) == value;
+			boolean three =  getIntArray(x+1,y-1,table) == value || getIntArray(x,y-1,table) == value || getIntArray(x-1,y-1,table) == value;
+			return one || two || three;
+		}
 	}
 	private boolean shouldSuppress(int x,int y,int gradientValue,int [][] refereneceTable)
 	{
