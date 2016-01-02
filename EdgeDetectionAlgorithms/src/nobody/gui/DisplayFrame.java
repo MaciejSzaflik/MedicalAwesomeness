@@ -71,6 +71,19 @@ public class DisplayFrame extends JFrame {
 		getContentPane().add(comboBox);
 		
 		JButton button = new JButton("Diff");
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(beforeImagePanel.getImageLoaded() == null)
+				{
+					beforeImagePanel.openFileChooser();
+				}
+				else
+				{
+					Diff diff = new Diff(beforeImagePanel.getImageLoaded());
+					diff.setVisible(true);
+				}
+			}
+		});
 		button.setBounds(554, 545, 117, 25);
 		getContentPane().add(button);
 		

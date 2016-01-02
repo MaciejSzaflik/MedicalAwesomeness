@@ -72,8 +72,7 @@ public class ShowAllAlgorithmsFrame extends JFrame {
 	    public void run() {
 			d.scaleAndSetImage(eD.DoAlgorithm(alg,img), alg.toString());
 	    }
-}
-	
+	}
 	
 	private Display createDisplayPanel(int x,int y,boolean visibleButton)
 	{
