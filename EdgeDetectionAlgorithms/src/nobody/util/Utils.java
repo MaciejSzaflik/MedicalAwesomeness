@@ -48,8 +48,9 @@ public class Utils {
 	}
 	public static BufferedImage diffTheImages(BufferedImage alfa, BufferedImage beta)
 	{
-		System.out.println("First: " + alfa.getHeight() + " " + alfa.getWidth());
-		System.out.println("Sec: " + beta.getHeight() + " " + beta.getWidth());
+		alfa = alfa.getSubimage(0, 0, Math.min(alfa.getWidth(), beta.getWidth()), Math.min(alfa.getHeight(), beta.getHeight()));
+		beta = beta.getSubimage(0, 0, Math.min(alfa.getWidth(), beta.getWidth()), Math.min(alfa.getHeight(), beta.getHeight()));
+
 		BufferedImage diff = new BufferedImage(alfa.getWidth(),alfa.getHeight(),BufferedImage.TYPE_INT_RGB) ;
 		for (int x = 0; x < diff.getWidth(); x++) {
 			for (int y = 0; y < diff.getHeight(); y++) {
