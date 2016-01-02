@@ -84,7 +84,7 @@ public class Frei_Chen implements IEdgeDetect {
 			for(int j = 0;j<M[i].length;j++)
 			{
 				int mFactor = M[i][j]*4;
-				int sFactor = S[i][j];
+				int sFactor = (int) (S[i][j]*0.75);
 				sum[i][j] = (int) (((double)mFactor/sFactor)*255);
 				
 			}		

@@ -20,7 +20,7 @@ public class DisplayFrame extends JFrame {
 		// TODO Auto-generated method stub
 		
 	}
-	private int sizeOfFrameX = 1200;
+	private int sizeOfFrameX = 1086;
 	private int sizeOfFrameY = 660;
 	private int sizeOfDisplay = 540;
 	
@@ -37,7 +37,7 @@ public class DisplayFrame extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 0, sizeOfFrameX, sizeOfFrameY);
 		
-		beforeImagePanel = createDisplayPanel(0,0,true);
+		beforeImagePanel = createDisplayPanel(0,0,false);
 		afterImagePanel = createDisplayPanel(sizeOfDisplay,0,false);
 		
 		getContentPane().setLayout(null);
@@ -69,6 +69,28 @@ public class DisplayFrame extends JFrame {
 		comboBox = new JComboBox<EdgeDetector.Algorithms>();
 		comboBox.setBounds(142, 570, 241, 24);
 		getContentPane().add(comboBox);
+		
+		JButton button = new JButton("Diff");
+		button.setBounds(554, 545, 117, 25);
+		getContentPane().add(button);
+		
+		JButton btnShowAll = new JButton("Show All");
+		btnShowAll.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(beforeImagePanel.getImageLoaded() == null)
+				{
+					beforeImagePanel.openFileChooser();
+				}
+				else
+				{
+					ShowAllAlgorithmsFrame all = new ShowAllAlgorithmsFrame();
+					all.setVisible(true);
+					all.Init(beforeImagePanel.getImageLoaded());
+				}
+			}
+		});
+		btnShowAll.setBounds(554, 570, 117, 25);
+		getContentPane().add(btnShowAll);
 		for (EdgeDetector.Algorithms alg : EdgeDetector.Algorithms.values()) {
 			comboBox.addItem(alg);
 		}
@@ -88,6 +110,6 @@ public class DisplayFrame extends JFrame {
 	private void AddEffectAndSwap()
 	{
 		BufferedImage image = beforeImagePanel.getImageLoaded();
-		afterImagePanel.scaleAndSetImage(edgeDetector.DoAlgorithm(getSelected(), image));
+		afterImagePanel.scaleAndSetImage(edgeDetector.DoAlgorithm(getSelected(),image),getSelected().toString());
 	}
 }

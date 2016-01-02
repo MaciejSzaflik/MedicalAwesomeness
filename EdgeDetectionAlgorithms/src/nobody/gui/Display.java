@@ -18,13 +18,19 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import javax.swing.border.BevelBorder;
 
 
 public class Display extends JPanel {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int realSize;
 	private JButton ChooseFileButton;
 	private JLabel imageLabel;
+	private JLabel titleLabel;
 	private BufferedImage imageLoaded;
 	public BufferedImage getImageLoaded()
 	{
@@ -33,7 +39,18 @@ public class Display extends JPanel {
 
 	public Display(int size,boolean chooseButtonVisible)
 	{
-		setLayout(new BorderLayout(0, 0));
+		setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		setLayout(null);
+		
+		JPanel panel = new JPanel();
+		panel.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		panel.setBounds(0, 0, 133, 26);
+		add(panel);
+		
+		titleLabel = new JLabel("none");
+		panel.add(titleLabel);
+		titleLabel.setBackground(Color.GREEN);
+		titleLabel.setForeground(Color.BLACK);
 		
 		if(chooseButtonVisible)
 			AddFileChooserButton();
@@ -72,9 +89,9 @@ public class Display extends JPanel {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		scaleAndSetImage(imageLoaded);
+		scaleAndSetImage(imageLoaded,"orginal");
 	}
-	public void scaleAndSetImage(BufferedImage image)
+	public void scaleAndSetImage(BufferedImage image,String titleStr)
 	{
 		if(imageLabel!=null)
 		{
@@ -82,23 +99,33 @@ public class Display extends JPanel {
 			imageLabel.revalidate();
 		}
 		AffineTransform at = new AffineTransform();
-		float scaleParameter = (float)getHeight()/image.getHeight();
+		
+		float scaleParameter = Math.min((float)getHeight()/image.getHeight(),(float)getWidth()/image.getWidth());
 		at.scale(scaleParameter ,scaleParameter );
 		AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+		
 		int newWidth = (int) (image.getWidth()*scaleParameter);
 		int newHeight = (int) (image.getHeight()*scaleParameter);
+		
 		BufferedImage after = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
+		
 		after = scaleOp.filter(image, after);
-		System.out.println(after);
+		
 		imageLoaded = after;
 		imageLabel = new JLabel(new ImageIcon(after));
+		imageLabel.setSize(newWidth, newHeight);
 		add(imageLabel);
+		
+		titleLabel.setText(titleStr);
+		
 		this.revalidate();
 		this.repaint();
 	}
 	
 	public void removeButton()
 	{
+		if(ChooseFileButton == null)
+			return;
 		remove(ChooseFileButton);
 		ChooseFileButton.setVisible(false);
 		ChooseFileButton.setEnabled(false);
@@ -107,6 +134,4 @@ public class Display extends JPanel {
 		this.repaint();
 		
 	}
-	
-	
 }
