@@ -41,7 +41,8 @@ public class Utils {
 		BufferedImage finalThresholdImage = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB) ;
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
-				finalThresholdImage.setRGB(x,y, (new Color(table[x][y],table[x][y],table[x][y]).getRGB()));
+				int value = Utils.clamp(table[x][y], 0, 255);
+				finalThresholdImage.setRGB(x,y, (new Color(value,value,value).getRGB()));
 			}
 		}
 		return finalThresholdImage;

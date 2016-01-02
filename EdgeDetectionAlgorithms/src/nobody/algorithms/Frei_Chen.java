@@ -71,27 +71,28 @@ public class Frei_Chen implements IEdgeDetect {
 		BufferedImage dest8 = new BufferedImage(Image.getWidth(), Image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
 		BufferedImage dest9 = new BufferedImage(Image.getWidth(), Image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
 		
-		BufferedImage M = sumTheImages(op1.filter(Image, dest1),op2.filter(Image, dest2),op3.filter(Image, dest3),op4.filter(Image, dest4));
-		BufferedImage S = sumTheImages(op5.filter(Image, dest5),op6.filter(Image, dest6),op7.filter(Image, dest7),op8.filter(Image, dest8),op9.filter(Image, dest9),M);
-		return M;
-		//return applyNormalizationFactor(M,S);
+		int[][] M = sumTheImages(op1.filter(Image, dest1),op2.filter(Image, dest2),op3.filter(Image, dest3),op4.filter(Image, dest4));
+		int[][] S = sumTheImages(op5.filter(Image, dest5),op6.filter(Image, dest6),op7.filter(Image, dest7),op8.filter(Image, dest8),op9.filter(Image, dest9),Utils.imageFromTableRGB(M));
+		//return M;
+		return applyNormalizationFactor(M,S);
 	}
-	public BufferedImage applyNormalizationFactor(BufferedImage M, BufferedImage S)
+	public BufferedImage applyNormalizationFactor(int[][] M, int[][] S)
 	{
-		int[][] sum = new int[M.getWidth()][ S.getHeight()];
-		for(int i = 0;i<M.getWidth();i++)
+		int[][] sum = new int[M.length][ M[0].length];
+		for(int i = 0;i<M.length;i++)
 		{
-			for(int j = 0;j<M.getHeight();j++)
+			for(int j = 0;j<M[i].length;j++)
 			{
-				int mFactor = Utils.getAt(i, j, M);
-				int sFactor = Utils.getAt(i, j, S);
-				sum[i][j] = (int) ((double)mFactor/sFactor);
+				int mFactor = M[i][j]*4;
+				int sFactor = S[i][j];
+				sum[i][j] = (int) (((double)mFactor/sFactor)*255);
+				
 			}		
 		}
-		return Utils.imageFromTable(sum); 
+		return Utils.imageFromTableRGB(sum); 
 	}
 	
-	public BufferedImage sumTheImages(BufferedImage ...bufferedImages)
+	public int[][] sumTheImages(BufferedImage ...bufferedImages)
 	{
 		int[][] sum = new int[bufferedImages[0].getWidth()][ bufferedImages[0].getHeight()];
 		for(int i = 0;i<sum.length;i++)
@@ -108,18 +109,20 @@ public class Frei_Chen implements IEdgeDetect {
 			{
 				for(int j = 0;j<image.getHeight();j++)
 				{
-					sum[i][j]+= Utils.getAt(i, j, image)*Utils.getAt(i, j, image);
+					sum[i][j]+= getRed(image.getRGB(i, j))*getRed(image.getRGB(i, j));
 				}		
 			}
 		}
-		return Utils.imageFromTable(sum);
+		return sum;
 	}
-	
+	public int getRed(int color) {
+		return (color & 0x00ff0000)  >> 16;
+	}
 	
 	
 	private float sqrtParam()
 	{
-		return (float) ((float)1/(Math.sqrt(2)*2));
+		return (float) ((float)1/(Math.sqrt(2)));
 	}
 
 }
